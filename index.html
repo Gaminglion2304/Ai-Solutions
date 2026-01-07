@@ -1,10 +1,307 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>AI Solutions</title>
-  </head>
-  <body>
-    <h1>Welcome to AI Solutions</h1>
-    <p>This is my first GitHub Pages website.</p>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chatbot UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --black: #000000;
+      --tan: #d2b48c;
+      --teal: #0b4c5f;
+      --light-gray: #d3d3d3;
+      --purple: #3b1a4d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, sans-serif;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--light-gray);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    /* ---------------------- WELCOME SCREEN ---------------------- */
+
+    .welcome-screen {
+      position: absolute;
+      inset: 0;
+      background: var(--black);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--light-gray);
+      z-index: 10;
+    }
+
+    .welcome-content {
+      text-align: center;
+      max-width: 360px;
+      padding: 20px;
+    }
+
+    .welcome-greeting {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--tan);
+      margin-bottom: 6px;
+    }
+
+    .welcome-sub {
+      font-size: 15px;
+      color: var(--light-gray);
+      margin-bottom: 24px;
+    }
+
+    .welcome-input {
+      display: flex;
+      background: var(--light-gray);
+      border-radius: 999px;
+      padding: 8px 12px;
+      gap: 8px;
+    }
+
+    .welcome-input input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--black);
+      font-size: 14px;
+    }
+
+    .welcome-input button {
+      background: var(--tan);
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--black);
+    }
+
+    /* ---------------------- CHAT UI ---------------------- */
+
+    .chat-container {
+      background: var(--black);
+      width: 70vw;          /* Bigger width */
+      height: 80vh;         /* Bigger height */
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--tan);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    }
+
+    .chat-header {
+      padding: 12px 16px;
+      background: var(--black);
+      border-bottom: 1px solid var(--tan);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bot-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: var(--tan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--black);
+      font-weight: bold;
+    }
+
+    .chat-title h1 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--tan);
+    }
+
+    .chat-body {
+      padding: 12px;
+      flex: 1;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      max-width: 80%;
+      margin-bottom: 10px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    .message.user {
+      margin-left: auto;
+      background: var(--purple);
+      color: var(--light-gray);
+      border-bottom-right-radius: 2px;
+    }
+
+    .message.bot {
+      margin-right: auto;
+      background: var(--teal);
+      color: var(--light-gray);
+      border-bottom-left-radius: 2px;
+    }
+
+    .timestamp {
+      font-size: 11px;
+      color: var(--tan);
+      margin-top: 2px;
+    }
+
+    .chat-footer {
+      padding: 10px;
+      border-top: 1px solid var(--tan);
+      background: var(--black);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: var(--light-gray);
+      border-radius: 999px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chat-input input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--black);
+      font-size: 14px;
+    }
+
+    .send-button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: var(--tan);
+      color: var(--black);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ---------------------- WELCOME SCREEN ---------------------- -->
+  <div id="welcomeScreen" class="welcome-screen">
+    <div class="welcome-content">
+      <h2 class="welcome-greeting">Good evening</h2>
+      <p class="welcome-sub">What can I help you with today?</p>
+
+      <div class="welcome-input">
+        <input id="welcomeInput" type="text" placeholder="Ask anything..." />
+        <button id="welcomeStart">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------------------- CHAT UI ---------------------- -->
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="bot-avatar">🤖</div>
+      <div class="chat-title">
+        <h1>Chatbot</h1>
+      </div>
+    </div>
+
+    <div id="chatBody" class="chat-body"></div>
+
+    <div class="chat-footer">
+      <div class="chat-input">
+        <input id="userInput" type="text" placeholder="Type your message..." />
+      </div>
+      <button id="sendButton" class="send-button">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const welcomeScreen = document.getElementById("welcomeScreen");
+    const welcomeInput = document.getElementById("welcomeInput");
+    const welcomeStart = document.getElementById("welcomeStart");
+
+    const chatBody = document.getElementById("chatBody");
+    const userInput = document.getElementById("userInput");
+    const sendButton = document.getElementById("sendButton");
+
+    function addMessage(text, sender = "user") {
+      const msg = document.createElement("div");
+      msg.classList.add("message", sender);
+
+      const content = document.createElement("div");
+      content.textContent = text;
+
+      const timestamp = document.createElement("div");
+      timestamp.classList.add("timestamp");
+      timestamp.textContent = new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+
+      msg.appendChild(content);
+      msg.appendChild(timestamp);
+      chatBody.appendChild(msg);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function fakeBotReply(text) {
+      setTimeout(() => {
+        addMessage("You said: \"" + text + "\"\n\nThis is a demo reply.", "bot");
+      }, 700);
+    }
+
+    function handleSend() {
+      const text = userInput.value.trim();
+      if (!text) return;
+
+      addMessage(text, "user");
+      userInput.value = "";
+      fakeBotReply(text);
+    }
+
+    sendButton.addEventListener("click", handleSend);
+    userInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") handleSend();
+    });
+
+    welcomeStart.addEventListener("click", () => {
+      const text = welcomeInput.value.trim();
+      if (!text) return;
+
+      welcomeScreen.style.display = "none";
+
+      userInput.value = text;
+      handleSend();
+    });
+  </script>
+
+</body>
 </html>
