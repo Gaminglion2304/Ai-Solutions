@@ -32,7 +32,6 @@
     }
 
     /* ---------------------- WELCOME SCREEN ---------------------- */
-
     .welcome-screen {
       position: absolute;
       inset: 0;
@@ -91,11 +90,10 @@
     }
 
     /* ---------------------- CHAT UI ---------------------- */
-
     .chat-container {
       background: var(--black);
-      width: 70vw;          /* Bigger width */
-      height: 80vh;         /* Bigger height */
+      width: 70vw;
+      height: 80vh;
       display: flex;
       flex-direction: column;
       border: 1px solid var(--tan);
@@ -210,11 +208,10 @@
 </head>
 
 <body>
-
   <!-- ---------------------- WELCOME SCREEN ---------------------- -->
   <div id="welcomeScreen" class="welcome-screen">
     <div class="welcome-content">
-      <h2 class="welcome-greeting">Good evening</h2>
+      <h2 class="welcome-greeting">Good </h2>
       <p class="welcome-sub">What can I help you with today?</p>
 
       <div class="welcome-input">
@@ -247,10 +244,32 @@
     const welcomeScreen = document.getElementById("welcomeScreen");
     const welcomeInput = document.getElementById("welcomeInput");
     const welcomeStart = document.getElementById("welcomeStart");
+    const welcomeGreeting = document.querySelector(".welcome-greeting");
 
     const chatBody = document.getElementById("chatBody");
     const userInput = document.getElementById("userInput");
     const sendButton = document.getElementById("sendButton");
+
+    // --- Time-based greeting ---
+    function setGreeting() {
+      const now = new Date();
+      const hour = now.getHours();
+      let greeting;
+
+      if (hour >= 5 && hour < 12) {
+        greeting = "Good Morning";
+      } else if (hour >= 12 && hour < 17) {
+        greeting = "Good Afternoon";
+      } else {
+        greeting = "Good Evening";
+      }
+
+      welcomeGreeting.textContent = greeting;
+    }
+
+    // Call immediately and refresh every minute
+    setGreeting();
+    setInterval(setGreeting, 60000);
 
     function addMessage(text, sender = "user") {
       const msg = document.createElement("div");
@@ -302,6 +321,5 @@
       handleSend();
     });
   </script>
-
 </body>
 </html>
