@@ -25,13 +25,30 @@ def home():
 
 
 @views.route('/delete-note', methods=['POST'])
-def delete_note():  
-    note = json.loads(request.data) # this function expects a JSON from the INDEX.js file 
-    noteId = note['noteId']
-    note = Note.query.get(noteId)
+@login_required
+def delete_note():
+    data = request.get_json()
+    if not data or 'noteId' not in data:
+        return jsonify({'error': 'Invalid request'}), 400
+    note = Note.query.get(data['noteId'])
     if note:
         if note.user_id == current_user.id:
             db.session.delete(note)
             db.session.commit()
 
     return jsonify({})
+
+@views.route('/chat', methods=['POST'])
+def chat():
+    if not current_user.is_authenticated:
+        return jsonify({'reply': 'Please login to chat.'}), 401
+
+    data = request.get_json()
+    if not data or 'message' not in data:
+        return jsonify({'reply': 'Invalid request'}), 400
+
+    user_message = data['message']
+
+    bot_reply = f'You said: "{user_message}"\n\nThis is a server response.'
+
+    return jsonify({'reply': bot_reply})
