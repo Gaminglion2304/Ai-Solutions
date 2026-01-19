@@ -10,20 +10,22 @@
       rel="stylesheet"
     />
 
-    <!-- Icons -->
+    <!-- Font Awesome -->
     <link
       href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css"
       rel="stylesheet"
     />
 
-    <title>{% block title %}Home{% endblock %}</title>
+    <title>{% block title %}AI Solutions{% endblock %}</title>
   </head>
 
   <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid">
-        <a class="navbar-brand" href="/">MyApp</a>
+        <a class="navbar-brand" href="{{ url_for('views.home') }}">
+          AI SOLUTIONS
+        </a>
 
         <button
           class="navbar-toggler"
@@ -40,17 +42,17 @@
         <div class="collapse navbar-collapse" id="navbar">
           <div class="navbar-nav ms-auto">
             {% if user.is_authenticated %}
-              <a class="nav-link" href="/website/templates/home.html">
+              <a class="nav-link" href="{{ url_for('views.home') }}">
                 <i class="fa-solid fa-house"></i> Home
               </a>
-              <a class="nav-link" href="/logout">
+              <a class="nav-link" href="{{ url_for('auth.logout') }}">
                 <i class="fa-solid fa-right-from-bracket"></i> Logout
               </a>
             {% else %}
-              <a class="nav-link" href="/website/templates/login.html">
+              <a class="nav-link" href="{{ url_for('auth.login') }}">
                 <i class="fa-solid fa-right-to-bracket"></i> Login
               </a>
-              <a class="nav-link" href="/website/templates/sign_up.html">
+              <a class="nav-link" href="{{ url_for('auth.sign_up') }}">
                 <i class="fa-solid fa-user-plus"></i> Sign Up
               </a>
             {% endif %}
@@ -86,22 +88,24 @@
       {% block content %}{% endblock %}
     </div>
 
+    <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     {% block javascript %}
     <script>
       function deleteNote(noteId) {
-        fetch("/delete-note", {
+        fetch("{{ url_for('views.delete_note') }}", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ noteId: noteId }),
         }).then(() => {
-          window.location.href = "/";
+          window.location.href = "{{ url_for('views.home') }}";
         });
       }
     </script>
     {% endblock %}
   </body>
 </html>
+
