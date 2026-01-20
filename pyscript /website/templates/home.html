@@ -23,11 +23,11 @@
     right: 0;
     bottom: 0;
     z-index: 10;
-
     background: var(--black);
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: opacity 0.3s ease;
   }
 
   .welcome-content {
@@ -47,6 +47,17 @@
     font-size: 15px;
     margin-bottom: 24px;
     color: var(--light-gray);
+  }
+
+  .welcome-start {
+    background: var(--tan);
+    color: var(--black);
+    border: none;
+    border-radius: 999px;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
   }
 
   .welcome-input {
@@ -112,11 +123,13 @@
   .message.user {
     margin-left: auto;
     background: var(--purple);
+    color: var(--light-gray);
   }
 
   .message.bot {
     margin-right: auto;
     background: var(--teal);
+    color: var(--light-gray);
   }
 
   .chat-footer {
@@ -141,6 +154,17 @@
     background: transparent;
   }
 
+  .chat-input textarea {
+    flex: 1;
+    resize: none;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+    line-height: 1.4;
+    max-height: 120px;
+  }
+
   .send-button {
     border: none;
     border-radius: 999px;
@@ -149,6 +173,12 @@
     font-weight: 600;
     cursor: pointer;
   }
+
+  .send-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
 </style>
 
 <!-- Welcome Screen -->
@@ -158,10 +188,9 @@
     <h2 class="welcome-greeting">Good Day {{ user.first_name }}</h2>
     <p class="welcome-sub">What can I help you with today?</p>
 
-    <div class="welcome-input">
-      <input id="welcomeInput" type="text" placeholder="Ask anything..." />
-      <button id="welcomeStart">➤</button>
-    </div>
+    <button id="welcomeStart" class="welcome-start">
+      Start chatting →
+    </button>
   </div>
 </div>
 
@@ -175,7 +204,11 @@
 
   <div class="chat-footer">
     <div class="chat-input">
-      <input id="userInput" type="text" placeholder="Type your message..." />
+      <textarea 
+        id="userInput" 
+        rows="1" 
+        placeholder="Type your message..." 
+      ></textarea>
     </div>
     <button id="sendButton" class="send-button">Send</button>
   </div>
@@ -184,14 +217,14 @@
 {% endblock %}
 
 {% block javascript %}
-
 <script>
-  const welcomeScreen = document.getElementById('welcomeScreen');
-  const welcomeInput = document.getElementById('welcomeInput');
-  const welcomeStart = document.getElementById('welcomeStart');
-  const chatBody = document.getElementById('chatBody');
-  const userInput = document.getElementById('userInput');
-  const sendButton = document.getElementById('sendButton');
+document.addEventListener("DOMContentLoaded", () => {
+
+  const welcomeScreen = document.getElementById("welcomeScreen");
+  const welcomeStart = document.getElementById("welcomeStart");
+  const chatBody = document.getElementById("chatBody");
+  const userInput = document.getElementById("userInput");
+  const sendButton = document.getElementById("sendButton");
 
   function addMessage(text, sender) {
     const msg = document.createElement("div");
@@ -201,11 +234,10 @@
     chatBody.scrollTop = chatBody.scrollHeight;
   }
 
-  function fakeBotReply(text) {
-    setTimeout(() => {
-      addMessage(`You said: "${text}"\n\nThis is a demo reply.`, "bot");
-    }, 600);
-  }
+  addMessage(
+    "👋 Hi, I’m Solutionbot.\nAsk me anything when you’re ready.",
+    "bot"
+  );
 
   async function handleSend() {
     const text = userInput.value.trim();
@@ -213,6 +245,7 @@
 
     addMessage(text, "user");
     userInput.value = "";
+    sendButton.disabled = true;
 
     try {
       const response = await fetch("{{ url_for('views.chat') }}", {
@@ -225,18 +258,30 @@
       addMessage(data.reply, "bot");
 
     } catch {
-      addMessage("Server error. Please try again.", "bot");
+      addMessage("⚠️ Server error. Please try again.", "bot");
+    } finally {
+      sendButton.disabled = false;
+      userInput.focus();
     }
   }
 
-  sendButton.onclick = handleSend;
-  userInput.onkeydown = e => e.key === "Enter" && handleSend();
+  userInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  });
 
+  sendButton.addEventListener("click", handleSend);
 
-  welcomeStart.onclick = () => {
-    welcomeScreen.style.display = "none";
-    userInput.focus();
-  };
+  welcomeStart.addEventListener("click", () => {
+    welcomeScreen.style.opacity = "0";
+    setTimeout(() => {
+      welcomeScreen.remove();
+      userInput.focus();
+    }, 300);
+  });
 
+});
 </script>
 {% endblock %}
