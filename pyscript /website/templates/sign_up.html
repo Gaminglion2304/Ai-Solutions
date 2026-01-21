@@ -1,4 +1,42 @@
-{% extends "base.html" %} {% block title %}Sign Up{% endblock %} {% block content %}
+{% extends "base.html" %} {% block title %}Sign Up{% endblock %} 
+
+{% block content %}
+
+<style>
+  :root {
+    --black: #000000;
+    --tan: #94dd69ff;
+    --teal: #363e41ff;
+    --light-gray: #d3d3d3;
+    --purple: #94dd69b4;
+  }
+
+  body {
+    background: var(--black);
+    color: var(--light-gray);
+  }
+
+  .form-group label {
+    color: var(--light-gray);
+  }
+
+  .form-control {
+    background: var(--teal);
+    border: 1px solid var(--light-gray);
+    color: var(--light-gray);
+  }
+
+  .form-control::placeholder {
+    color: var(--light-gray);
+    opacity: 0.7;
+  }
+
+  .btn-primary {
+    background: var(--tan);
+    border: none;
+    color: var(--black);
+  }
+</style>
 
 <form method="POST">
   <h3 class="text-center mb-4">Sign Up</h3>
