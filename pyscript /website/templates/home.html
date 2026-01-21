@@ -6,10 +6,10 @@
 <style>
   :root {
     --black: #000000;
-    --tan: #d2b48c;
-    --teal: #0b4c5f;
+    --tan: #94dd69ff;
+    --teal: #363e41ff;
     --light-gray: #d3d3d3;
-    --purple: #3b1a4d;
+    --purple: #94dd69b4;
   }
 
   body{
@@ -118,6 +118,9 @@
     border-radius: 12px;
     font-size: 14px;
     white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    overflow-x: hidden;
   }
 
   .message.user {
@@ -235,7 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   addMessage(
-    "👋 Hi, I’m Solutionbot.\nAsk me anything when you’re ready.",
+    "Hi, I’m Solutionbot.\nAsk me anything when you’re ready.",
     "bot"
   );
 
@@ -258,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
       addMessage(data.reply, "bot");
 
     } catch {
-      addMessage("⚠️ Server error. Please try again.", "bot");
+      addMessage("Server error. Please try again.", "bot");
     } finally {
       sendButton.disabled = false;
       userInput.focus();
