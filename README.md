@@ -1,4 +1,4 @@
-![A screenshot of the project](Screenshot from 2026-01-24 13-31-34.png)
+![A screenshot of the project](images/Screenshot from 2026-01-24 13-31-34.png)
 
 # Ai-Solutions
 Ai Assistant Website 
