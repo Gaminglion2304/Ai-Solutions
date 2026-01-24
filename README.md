@@ -1,3 +1,5 @@
+![A screenshot of the project]()
+
 # Ai-Solutions
 Ai Assistant Website 
 
