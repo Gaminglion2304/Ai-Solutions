@@ -1,5 +1,5 @@
 # Ai-Solutions
-Ai Assistant Website 
+Research Assistant Website 
 
 # About the project
 This website is a current demo model for a Chatbot. You may ask, isn't AI a bubble soon to burst? Well this project has been ideated more so as tool to assist students, businesses and really anyone looking to streamline their hyper-focused research, especially in data heavy use-cases.
