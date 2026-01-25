@@ -2,10 +2,10 @@ from flask import Blueprint, render_template, request, flash, jsonify
 from flask_login import login_required, current_user
 from .models import Note
 from . import db
+from .llm import client
 import json
 
 views = Blueprint('views', __name__)
-
 
 @views.route('/', methods=['GET', 'POST'])
 @login_required
@@ -40,15 +40,42 @@ def delete_note():
 
 @views.route('/chat', methods=['POST'])
 def chat():
+    # if not current_user.is_authenticated:
+    #     return jsonify({'reply': 'Please login to chat.'}), 401
+
+    # data = request.get_json()
+    # if not data or 'message' not in data:
+    #     return jsonify({'reply': 'Invalid request'}), 400
+
+    # user_message = data['message']
+
+    # bot_reply = f'You said: "{user_message}"\n\nThis is a server response.'
+
+    # return jsonify({'reply': bot_reply})
     if not current_user.is_authenticated:
-        return jsonify({'reply': 'Please login to chat.'}), 401
+        return jsonify({"reply": "Please log in to chat."}), 401
 
     data = request.get_json()
-    if not data or 'message' not in data:
-        return jsonify({'reply': 'Invalid request'}), 400
+    user_message = data.get("message", "").strip()
 
-    user_message = data['message']
+    if not user_message:
+        return jsonify({"reply": "Empty message."}), 400
 
-    bot_reply = f'You said: "{user_message}"\n\nThis is a server response.'
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash-lite",
+            contents=[
+                {
+                    "role": "user",
+                    "parts": [{"text": user_message}]
+                }
+            ]
+        )
 
-    return jsonify({'reply': bot_reply})
+        bot_reply = response.text
+
+    except Exception as e:
+        print("GEMINI ERROR:", repr(e))
+        bot_reply = "I’m having trouble responding right now."
+
+    return jsonify({"reply": bot_reply})
