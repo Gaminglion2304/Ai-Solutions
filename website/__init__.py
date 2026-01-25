@@ -2,10 +2,13 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
+from dotenv import load_dotenv
 import secrets
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
+
+load_dotenv()
 
 def create_app():
     app = Flask(__name__)
