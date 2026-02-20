@@ -300,6 +300,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const sendButton = document.getElementById("sendButton");
   const MIN_TYPING_TIME = 700;
 
+  let currentConversationId = null;
+
+  // Welcome screen event listener - MOVE THIS UP
+  welcomeStart.addEventListener("click", () => {
+    welcomeScreen.style.opacity = "0";
+    setTimeout(() => {
+      welcomeScreen.remove();
+      userInput.focus();
+    }, 300);
+  });
+
   function addMessage(text, sender) {
     const msg = document.createElement("div");
     msg.className = "message " + sender;
@@ -308,8 +319,16 @@ document.addEventListener("DOMContentLoaded", () => {
     chatBody.scrollTop = chatBody.scrollHeight;
   }
 
+  function clearChatMessages() {
+    chatBody.innerHTML = "";
+    addMessage(
+      "Hi, I'm Solutionbot.\nAsk me anything when you're ready.",
+      "bot"
+    );
+  }
+
   addMessage(
-    "Hi, I’m Solutionbot.\nAsk me anything when you’re ready.",
+    "Hi, I'm Solutionbot.\nAsk me anything when you're ready.",
     "bot"
   );
 
@@ -349,10 +368,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch("{{ url_for('views.chat') }}", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text })
+        body: JSON.stringify({ 
+          message: text,
+          conversation_id: currentConversationId
+        })
       });
 
       const data = await response.json();
+      
+      // Save conversation ID for next message
+      currentConversationId = data.conversation_id;
+      
       const elapsed = Date.now() - startTime;
       const remaining = Math.max(0, MIN_TYPING_TIME - elapsed);
 
@@ -362,6 +388,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }, remaining)
 
     } catch (error) {
+      console.error("Chat error:", error);
       hideTypingIndicator();
       addMessage("Server error. Please try again.", "bot");
 
@@ -382,13 +409,69 @@ document.addEventListener("DOMContentLoaded", () => {
 
   sendButton.addEventListener("click", handleSend);
 
-  welcomeStart.addEventListener("click", () => {
-    welcomeScreen.style.opacity = "0";
-    setTimeout(() => {
-      welcomeScreen.remove();
-      userInput.focus();
-    }, 300);
-  });
+  // Start a new conversation
+  async function newConversation() {
+    try {
+      const response = await fetch('/conversation/new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      const data = await response.json();
+      currentConversationId = data.conversation_id;
+      
+      clearChatMessages();
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+    }
+  }
+
+  // Load conversation history
+  async function loadConversations() {
+    try {
+      const response = await fetch('/conversations');
+      const data = await response.json();
+      
+      console.log("Conversations:", data.conversations);
+    } catch (error) {
+      console.error("Error loading conversations:", error);
+    }
+  }
+
+  // Load specific conversation
+  async function loadConversation(conversationId) {
+    try {
+      const response = await fetch(`/conversation/${conversationId}`);
+      const data = await response.json();
+      
+      currentConversationId = conversationId;
+      
+      chatBody.innerHTML = "";
+      data.messages.forEach(msg => {
+        addMessage(msg.content, msg.role === 'user' ? 'user' : 'bot');
+      });
+    } catch (error) {
+      console.error("Error loading conversation:", error);
+    }
+  }
+
+  // Delete conversation
+  async function deleteConversation(conversationId) {
+    try {
+      await fetch(`/conversation/${conversationId}`, {
+        method: 'DELETE'
+      });
+      
+      if (conversationId === currentConversationId) {
+        await newConversation();
+      }
+    } catch (error) {
+      console.error("Error deleting conversation:", error);
+    }
+  }
+
 });
 </script>
 {% endblock %}
